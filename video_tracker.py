@@ -5,34 +5,6 @@ import sys
 import io
 import tkinter as tk
 
-def old_fn():
-    stdout_redirect = 'file_output.txt'
-
-    with open(stdout_redirect, 'w') as f:
-        sys.stdout = f
-
-        dirpath = '~/Movies/dance_tutorials/'
-        dirpath = os.path.expanduser(dirpath)
-        mp4_parser.DEBUG=0
-        print("Run parser:")
-
-    ##    root = "~/Movies/dance_tutorials/spain_videos_miguel/"
-    ##    for i in range(0,1):
-    ##        for filename in ["9-3-2015.mp4"]:
-        for root, directories, filenames in os.walk(dirpath):
-            for filename in filenames:
-                path = os.path.join(root,filename)
-                print(path.encode('utf-8'))
-                if path.endswith('.mp4'):
-                    print(path.encode('utf-8'))
-                    #print('='*60)
-                    #mp4_parser.readMp4File(os.path.join(root,filename))
-                    #print('='*60)
-                    #field = 'creation_time'
-                    #val = mp4_parser.findMp4Field(os.path.join(root,filename), field)
-                    #print("DEBUG: " + field + "="+ str(val))
-                    date = filename_parser.datetimeFromFilename(filename)
-                    print(str(date))
 class Application(tk.Frame):
     def __init__(self, master=None):
         super().__init__(master)
@@ -53,10 +25,25 @@ class Application(tk.Frame):
         self.e.pack(side=tk.LEFT, fill=tk.X, expand=True)
         self.search_fr.pack(side=tk.TOP, fill=tk.X, expand=False)
         # List box
+        self.filelist = []
         self.entry_list = tk.Frame(self.master, borderwidth=1, relief=tk.RAISED)
-        self.results = tk.Label(self.entry_list, text='Hello')
-        self.results.pack(fill=tk.BOTH)
+        self.results_str = tk.StringVar(self.master)
+        self.results_str.set('Hello')
+        self.res = tk.Canvas(self.entry_list, bg='blue')
+##        self.res.create_line(0,0,200,100)
+        self.res.pack(fill=tk.BOTH, expand=True)
+##        self.results = tk.Label(self.entry_list, textvariable=self.results_str)
+##        self.results.pack(fill=tk.BOTH)
         self.entry_list.pack(fill=tk.BOTH, expand=True)
+        # Add Directory button
+        # NOTE: Find a way to do this with just one window.
+        self.add_dir = tk.Button(self.master, text='Add Directory',
+                                 command=self.dir_selector)
+        self.add_dir.pack(side='left')
+        # Add Files... button
+        self.add_files = tk.Button(self.master, text='Add Files...',
+                                   command=self.file_selector)
+        self.add_files.pack(side='left')
         # Quit button
         self.quit = tk.Button(self.master, text='Quit', fg='red',
                               command=self.master.destroy)
@@ -65,12 +52,22 @@ class Application(tk.Frame):
         print('Searching...')
     def clear_search(self, event):
         self.e.delete(0, tk.END)
+    def file_selector(self):
+        filenames = tk.filedialog.askopenfilename(multiple=True)
+        print(filenames)
+        self.filelist.append(filenames)
+        self.results_str.set(filenames)
+    def dir_selector(self):
+        filenames = tk.filedialog.askdirectory()
+        print(filenames)
+        self.filelist.append(filenames)
+        self.results_str.set(filenames)
 
 def main(argv=None):
     if argv is None:
         argv = sys.argv
     root = tk.Tk()
-    root.geometry("300x200+300+300")
+    root.geometry("640x480+300+300")
     app = Application(master=root)
     app.mainloop()
 
