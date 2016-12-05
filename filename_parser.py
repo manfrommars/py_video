@@ -13,7 +13,7 @@ def datetimeFromFilename(filename):
     elif filename.startswith('VID_'):
         # Type 2: VID_YYYYMMDD_HHMMSS
         dates = filename.split('_')
-        times = dates[2].strip('.mp4')
+        time = dates[2].strip('.mp4')
         date = dates[1]
     elif filename[:4].isdigit():
         # Type 3: YYYY-MM-DD
@@ -38,13 +38,14 @@ def datetimeFromFilename(filename):
         time = "000000"
     if not date:
         date = "19000101"
-    print(date)
+    #print(date)
+    #print(time)
     # Translate canonical YYYYMMDD and HHMMSS into date and time
     date = [int(date[:4]), int(date[4:6]), int(date[6:])]
     time = [int(time[:2]), int(time[2:4]), int(time[4:])]
           
-    print(str(date))
-    print(str(time))
+    #print(str(date))
+    #print(str(time))
     try:
         dt = datetime.datetime(date[0],
                                date[1],
@@ -55,6 +56,6 @@ def datetimeFromFilename(filename):
                                0)
     except ValueError as err:
         raise err
-    print(str(dt))
+    #print(str(dt))
 
     return dt
