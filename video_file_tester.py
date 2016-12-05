@@ -24,6 +24,8 @@ class FileInputTesting(unittest.TestCase):
                                              'class_video_test/'+
                                              'MVI_4299.MOV')
             self.assertEqual(test_file.get_creation_time(), None)
+            self.assertEqual(test_file.get_hash(),
+                             '33b1fc20712a0c117fbb3a4defbda653')
         except FileNotFoundError:
             self.fail('file_item.video_file() raised FileNotFoundError ' +
                       'unexpectedly')
@@ -36,6 +38,8 @@ class FileInputTesting(unittest.TestCase):
                                           'VID_20150330_221716.mp4')
             self.assertEqual(test_file.get_creation_time(),
                              datetime.datetime(2015,3,30,22,17,16))
+            self.assertEqual(test_file.get_hash(),
+                             'f38216382749375018eb71c5671df046')
         except FileNotFoundError:
             self.fail('file_item.video_file() raised FileNotFoundError ' +
                       'unexpectedly')
@@ -57,6 +61,8 @@ class FileInputTesting(unittest.TestCase):
                                              'class_video_test/'+
                                              'MVI_4299.MOV')
             self.assertEqual(test_file.get_creation_time(), None)
+            self.assertEqual(test_file.get_hash(),
+                             '33b1fc20712a0c117fbb3a4defbda653')
         except FileNotFoundError:
             self.fail('file_item.video_file() raised FileNotFoundError ' +
                       'unexpectedly')        
