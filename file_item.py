@@ -25,7 +25,8 @@ class video_file(object):
         # For MP4 files, check for the creation date in the file
         metadata_info = None
         if os.path.splitext(filename)[-1].lower() == '.mp4':
-            creation_secs = mp4_parser.findMp4Field(self.filepath, 'creation_time')
+            creation_secs = mp4_parser.findMp4Field(self.filepath,
+                                                    'creation_time')
             metadata_info = datetime.datetime(1901, 1, 1)
             metadata_info += datetime.timedelta(seconds=creation_secs)
         file_dt = filename_parser.datetimeFromFilename(filename)
