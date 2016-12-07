@@ -3,16 +3,31 @@ import file_item
 import os
 import sys
 import io
+import pickle
 import tkinter as tk
 
 class Application(tk.Frame):
     def __init__(self, master=None):
-        self.vid_files = []
-        self.filelist = []
+        # Initialize lists of data 
+        self.vid_files  = [] # Representation of file data
+        self.file_texts = [] # Representation of displayed data
+        self.data_file = 'videos.db'
+        # Perform widget setup
         super().__init__(master)
         self.master = master
         self.pack()
         self.create_widgets()
+        # Load our stored database on startup
+        if os.path.exists(self.data_file):
+            # Load data
+            with open(self.data_file, 'rb') as dbfile:
+                try:
+                    while True:
+                        vid_file = pickle.load(dbfile)
+                        self.vid_files.append(vid_file)
+                        self.display_add_file(vid_file)
+                except EOFError:
+                    pass
     def create_widgets(self):
         # Search bar
         self.search_fr = tk.Frame(self.master, borderwidth=1,
@@ -58,26 +73,45 @@ class Application(tk.Frame):
         self.e.delete(0, tk.END)
     def file_selector(self):
         filenames = tk.filedialog.askopenfilename(multiple=True)
-        print(filenames)
         for f in filenames:
-            self.vid_files.append(file_item.video_file(f))
-        self.filelist.append(filenames)
-##        self.results_str.set(filenames)
+            self.add_filepath(f)
     def dir_selector(self):
         filenames = tk.filedialog.askdirectory()
         # Walk the directory and add all files
         for root, dirs, files in os.walk(filenames):
             for name in files:
                 filepath = os.path.join(root, name)
-                self.vid_files.append(file_item.video_file(filepath))
-                self.filelist.append(filepath)
-##                self.w = tk.Canvas(self.res, height=20)
-##                self.w.create_text(200,10,text=filepath)
-##                self.w.pack(fill=tk.X)
-                self.res.create_text(200, 15 * (len(self.filelist)-1) + 5, text=filepath)
-        print(self.filelist)
-        self.res.config(scrollregion=(0,0,300, len(self.filelist)*15))
-##        self.results_str.set(self.filelist)
+                self.add_filepath(filepath)
+    # Add a file at filepath to the list of files
+    def add_filepath(self, filepath):
+        if not os.path.exists(filepath):
+            return None
+        filename = os.path.basename(filepath)
+        vid_file = file_item.video_file(filepath)
+        # Check whether this file exists already
+        for f in self.vid_files:
+            if f.get_hash() == vid_file.get_hash():
+                print('File already exists: %s' % vid_file.get_filename())
+                return None
+        # Update the database in memory
+        self.vid_files.append(vid_file)
+        # Add the file info to the display
+        self.display_add_file(vid_file)
+        # Update the database on the filesystem
+        self.update_stored_info(vid_file)
+        return vid_file
+    # Add data from the video file to our pickeld database
+    def update_stored_info(self, vid_file_info):
+        with open(self.data_file, 'ab') as data_file:
+            pickle.dump(vid_file_info, data_file)
+    def display_add_file(self, vid_file_info):
+        text_item = self.res.create_text(0, 15 * (len(self.vid_files)-1),
+                                         text=vid_file_info.get_filename(),
+                                         anchor=tk.NW,
+                                         font=('Helvetica',15))
+        self.file_texts.append(text_item)
+        # Update scroll region
+        self.res.config(scrollregion=(0,0,300, len(self.vid_files)*15))
 
 def main(argv=None):
     if argv is None:

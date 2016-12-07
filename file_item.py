@@ -48,3 +48,5 @@ class video_file(object):
         return self.creation_time
     def get_hash(self):
         return self.file_hash
+    def get_filename(self):
+        return os.path.basename(self.filepath)
