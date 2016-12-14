@@ -7,6 +7,7 @@ import pickle
 import tkinter as tk
 
 class Application(tk.Frame):
+    """Widget containing information about user-loaded videos."""
     def __init__(self, master=None):
         # Initialize lists of data 
         self.vid_files  = [] # Representation of file data
@@ -40,6 +41,7 @@ class Application(tk.Frame):
         self.e.delete(0, tk.END)
         self.e.insert(0, 'Enter search terms')
         self.e.bind('<Button-1>', self.clear_search)
+        self.e.bind('<Return>', self.search)
         self.e.pack(side=tk.LEFT, fill=tk.X, expand=True)
         self.search_fr.pack(side=tk.TOP, fill=tk.X, expand=False)
         
@@ -51,6 +53,7 @@ class Application(tk.Frame):
         self.ybar.pack(side=tk.RIGHT, fill=tk.Y)
         self.ybar.config(command=self.res.yview)
         self.res.config(yscrollcommand=self.ybar.set)
+        self.res.bind_all('<MouseWheel>', self.vert_scroll)
         self.res.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         self.entry_list.pack(fill=tk.BOTH, expand=True)
 
@@ -67,10 +70,22 @@ class Application(tk.Frame):
         self.quit = tk.Button(self.master, text='Quit', fg='red',
                               command=self.master.destroy)
         self.quit.pack(side='right')
-    def search(self):
-        print('Searching...')
+    def search(self, event=None):
+        """Return the list of matching files."""
+        #print('Searching...')
+        val= self.e.get()
+        #print(val)
+        self.clear_file_display()
+        for vidfile in self.vid_files:
+            if val in vidfile.get_filename():
+                #print(vidfile.get_filename())
+                self.display_add_file(vidfile)
+        #print(res)
     def clear_search(self, event):
         self.e.delete(0, tk.END)
+        self.restore_file_display()
+    def vert_scroll(self, event):
+        self.res.yview_scroll(-1 * event.delta, 'units')
     def file_selector(self):
         filenames = tk.filedialog.askopenfilename(multiple=True)
         for f in filenames:
@@ -105,13 +120,24 @@ class Application(tk.Frame):
         with open(self.data_file, 'ab') as data_file:
             pickle.dump(vid_file_info, data_file)
     def display_add_file(self, vid_file_info):
-        text_item = self.res.create_text(0, 15 * (len(self.vid_files)-1),
+        text_item = self.res.create_text(0, 15 * (len(self.file_texts)),
                                          text=vid_file_info.get_filename(),
                                          anchor=tk.NW,
                                          font=('Helvetica',15))
         self.file_texts.append(text_item)
+        #print(vid_file_info.get_filename())
         # Update scroll region
-        self.res.config(scrollregion=(0,0,300, len(self.vid_files)*15))
+        self.res.config(scrollregion=(0,0,300, (len(self.file_texts))*15+5))
+    def clear_file_display(self):
+        """Clear all displayed objects."""
+        for text in self.file_texts:
+            self.res.delete(text)
+        self.file_texts = []
+    def restore_file_display(self):
+        """Restore all file objects to the Canvas."""
+        self.clear_file_display()
+        for vidfile in self.vid_files:
+            self.display_add_file(vidfile)
 
 def main(argv=None):
     if argv is None:
