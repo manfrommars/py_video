@@ -138,7 +138,7 @@ class Application(tk.Frame):
                                          text=vid_file_info.get_creation_time(),
                                          anchor=tk.NW,
                                          font=('Helvetica',15))
-        self.file_texts.append((text_item, box_item))
+        self.file_texts.append((text_item, box_item, date_item))
         #print(vid_file_info.get_filename())
         # Update scroll region
         self.res.config(scrollregion=(0,0,300, (len(self.file_texts))*45+5))
@@ -147,6 +147,7 @@ class Application(tk.Frame):
         for text in self.file_texts:
             self.res.delete(text[0])
             self.res.delete(text[1])
+            self.res.delete(text[2])
         self.file_texts = []
     def restore_file_display(self):
         """Restore all file objects to the Canvas."""
