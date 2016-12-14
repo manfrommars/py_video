@@ -38,6 +38,7 @@ class video_file(object):
         else:
             self.creation_time = file_dt
         self.file_hash = self.get_md5sum(self.filepath)
+        self.tags = {}
     def get_md5sum(self, filepath):
         hash_md5 = hashlib.md5()
         with open(filepath, 'rb') as f:
@@ -50,3 +51,13 @@ class video_file(object):
         return self.file_hash
     def get_filename(self):
         return os.path.basename(self.filepath)
+    def add_tag(self, tag, value):
+        # Check to see if this is new
+        if not self.tags[tag]:
+            self.tags[tag] = value
+            return True
+        else:
+            print('Tag [%s] exists: %s'%(tag, self.tags[tag]))
+            return False
+    def get_tags(self):
+        return self.tags
