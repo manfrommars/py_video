@@ -1,4 +1,3 @@
-from mp4_parser import mp4_parser
 import file_item
 import os
 import sys
