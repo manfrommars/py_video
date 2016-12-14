@@ -69,6 +69,9 @@ class Application(tk.Frame):
         self.quit = tk.Button(self.master, text='Quit', fg='red',
                               command=self.master.destroy)
         self.quit.pack(side='right')
+        # For some reason, this is required to keep the first entry from being
+        # cut off
+        self.res.yview_scroll(10, 'units')
     def search(self, event=None):
         """Return the list of matching files."""
         #print('Searching...')
@@ -119,18 +122,31 @@ class Application(tk.Frame):
         with open(self.data_file, 'ab') as data_file:
             pickle.dump(vid_file_info, data_file)
     def display_add_file(self, vid_file_info):
-        text_item = self.res.create_text(0, 15 * (len(self.file_texts)),
+        # Each file is given three lines of space
+        # First line will be filename, then creation date
+        # Second line will be tags
+        box_item = self.res.create_rectangle(0,
+                                             45 * len(self.file_texts),
+                                             615,
+                                             45 * (len(self.file_texts) + 1),
+                                             outline='gray')
+        text_item = self.res.create_text(4, 45 * (len(self.file_texts)),
                                          text=vid_file_info.get_filename(),
                                          anchor=tk.NW,
                                          font=('Helvetica',15))
-        self.file_texts.append(text_item)
+        date_item = self.res.create_text(640-170, 45 * (len(self.file_texts)),
+                                         text=vid_file_info.get_creation_time(),
+                                         anchor=tk.NW,
+                                         font=('Helvetica',15))
+        self.file_texts.append((text_item, box_item))
         #print(vid_file_info.get_filename())
         # Update scroll region
-        self.res.config(scrollregion=(0,0,300, (len(self.file_texts))*15+5))
+        self.res.config(scrollregion=(0,0,300, (len(self.file_texts))*45+5))
     def clear_file_display(self):
         """Clear all displayed objects."""
         for text in self.file_texts:
-            self.res.delete(text)
+            self.res.delete(text[0])
+            self.res.delete(text[1])
         self.file_texts = []
     def restore_file_display(self):
         """Restore all file objects to the Canvas."""
