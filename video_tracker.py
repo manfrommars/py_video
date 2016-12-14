@@ -144,7 +144,7 @@ class Application(tk.Frame):
                                  text=vid_file_info.get_creation_time(),
                                  anchor=tk.NW, font=('Helvetica',15))
             )
-        # Rectangle is first, it will have the selection bindings
+        # Store local items
         self.file_items.append(local_items)
         # Bind to all items for mouse selection
         for item in local_items:
@@ -157,7 +157,7 @@ class Application(tk.Frame):
         for itemlist in self.file_items:
             for item in itemlist:
                 self.res.delete(item)
-        self.file_items = []
+        self.file_items.clear()
     def restore_file_display(self):
         """Restore all file objects to the Canvas."""
         self.clear_file_display()
