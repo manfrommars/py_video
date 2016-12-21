@@ -89,6 +89,12 @@ class video_file(object):
                                  anchor=tk.NW, font=('Helvetica',
                                                      self.font_size))
             )
+        self.canvas_items.append(
+            self.canvas.create_arc(4, offset+30, 14, offset+20,
+                                   start=90, extent=90,
+                                   fill="gray", outline='',
+                                   style=tk.PIESLICE)
+            )
         # Finally, bind to left mouse clicks
         for item in self.canvas_items:
             self.canvas.tag_bind(item, '<ButtonPress-1>', self.selected)
