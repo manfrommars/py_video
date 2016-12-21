@@ -5,6 +5,7 @@ import errno
 import datetime
 import hashlib
 import tkinter as tk
+import subprocess
 # Custom Python libraries
 from mp4_parser import mp4_parser
 import filename_parser
@@ -98,6 +99,7 @@ class video_file(object):
         self.canvas_items.clear()
     def selected(self, event):
         print('Selected: %s' % self.get_filename())
+        subprocess.Popen(['open', self.filepath])
     def __getstate__(self):
         state = self.__dict__.copy()
         del state['canvas']
