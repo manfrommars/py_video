@@ -10,8 +10,8 @@ class Application(tk.Frame):
     def __init__(self, master=None):
         # Initialize lists of data 
         self.vid_files  = [] # Representation of file data
-        self.file_items = [] # Representation of displayed data
         self.data_file = 'videos.db'
+        self.draw_depth = 0
         # Perform widget setup
         super().__init__(master)
         self.master = master
@@ -23,7 +23,9 @@ class Application(tk.Frame):
             with open(self.data_file, 'rb') as dbfile:
                 try:
                     while True:
+                        # Pickle will not save the canvas
                         vid_file = pickle.load(dbfile)
+                        vid_file.canvas = self.res
                         self.vid_files.append(vid_file)
                         self.display_add_file(vid_file)
                 except EOFError:
@@ -41,6 +43,7 @@ class Application(tk.Frame):
         self.e.insert(0, 'Enter search terms')
         self.e.bind('<Button-1>', self.clear_search)
         self.e.bind('<Return>', self.search)
+        self.e.bind('<KP_Enter>', self.search)
         self.e.pack(side=tk.LEFT, fill=tk.X, expand=True)
         self.search_fr.pack(side=tk.TOP, fill=tk.X, expand=False)
         
@@ -104,7 +107,7 @@ class Application(tk.Frame):
         if not os.path.exists(filepath):
             return None
         filename = os.path.basename(filepath)
-        vid_file = file_item.video_file(filepath)
+        vid_file = file_item.video_file(filepath, self.res)
         # Check whether this file exists already
         for f in self.vid_files:
             if f.get_hash() == vid_file.get_hash():
@@ -120,6 +123,11 @@ class Application(tk.Frame):
     # Select a video item
     def select_video(self, event):
         print('Selected: ')
+        # Use "find_overlapping" to get the bounding rectangle, which will be
+        # the lowest numbered item
+        rect = min(event.widget.find_overlapping(event.x, event.y, event.x+1,
+                                                 event.y+1))
+        print(rect)
     # Add data from the video file to our pickeld database
     def update_stored_info(self, vid_file_info):
         with open(self.data_file, 'ab') as data_file:
@@ -128,36 +136,16 @@ class Application(tk.Frame):
         # Each file is given three lines of space
         # First line will be filename, then creation date
         # Second line will be tags
-        local_items = []
-        local_items.append(
-            self.res.create_rectangle(0, 45 * len(self.file_items), 615,
-                                      45 * (len(self.file_items) + 1),
-                                      outline='gray', fill='white')
-            )
-        local_items.append(
-            self.res.create_text(4, 45 * (len(self.file_items)),
-                                 text=vid_file_info.get_filename(),
-                                 anchor=tk.NW, font=('Helvetica',15))
-            )
-        local_items.append(
-            self.res.create_text(640-170, 45 * (len(self.file_items)),
-                                 text=vid_file_info.get_creation_time(),
-                                 anchor=tk.NW, font=('Helvetica',15))
-            )
-        # Store local items
-        self.file_items.append(local_items)
-        # Bind to all items for mouse selection
-        for item in local_items:
-            self.res.tag_bind(item, '<ButtonPress-1>', self.select_video)
+        self.draw_depth += vid_file_info.draw(self.draw_depth)
         #print(vid_file_info.get_filename())
+
         # Update scroll region
-        self.res.config(scrollregion=(0,0,300, (len(self.file_items))*45+5))
+        self.res.config(scrollregion=(0,0,300, self.draw_depth+5))
     def clear_file_display(self):
         """Clear all displayed objects."""
-        for itemlist in self.file_items:
-            for item in itemlist:
-                self.res.delete(item)
-        self.file_items.clear()
+        for vid_file in self.vid_files:
+            vid_file.hide()
+        self.draw_depth = 0
     def restore_file_display(self):
         """Restore all file objects to the Canvas."""
         self.clear_file_display()
