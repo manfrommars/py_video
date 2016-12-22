@@ -81,13 +81,15 @@ class video_file(object):
             self.canvas.create_text(4, offset,
                                  text=self.get_filename(),
                                  anchor=tk.NW, font=('Helvetica',
-                                                     self.font_size))
+                                                     self.font_size),
+                                 tag='title')
             )
         self.canvas_items.append(
             self.canvas.create_text(640-170, offset,
                                  text=self.get_creation_time(),
                                  anchor=tk.NW, font=('Helvetica',
-                                                     self.font_size))
+                                                     self.font_size),
+                                 tag='datetime')
             )
         self.canvas_items.append(
             self.canvas.create_arc(4, offset+30, 14, offset+20,
@@ -105,7 +107,13 @@ class video_file(object):
         self.canvas_items.clear()
     def selected(self, event):
         print('Selected: %s' % self.get_filename())
-        subprocess.Popen(['open', self.filepath])
+        # Use "find_overlapping" to get the bounding rectangle, which will be
+        # the lowest numbered item
+        rect = event.widget.find_closest(event.x, event.y)[0]
+        local = [f for f in self.canvas.find_withtag('title')
+                 if f in self.canvas_items]
+        if rect in local:
+            subprocess.Popen(['open', self.filepath])
     def __getstate__(self):
         state = self.__dict__.copy()
         del state['canvas']
