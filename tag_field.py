@@ -11,13 +11,23 @@ class tag_field(object):
         self.offset    = offset
         self.tags      = tags
         self.font_size = font_size
+        # Starting position of tag field
+        self.x = 4
+        self.y = 20
+        for tag in tags:
+            self.rounded_box = rounded_box(self.canvas, tag,
+                                           self.offset, self.font_size,
+                                           self.x, self.y)
+    def hide(self):
+        self.rounded_box.hide()
 
 class rounded_box(object):
-    def __init__(self, canvas, tag, offset, font_size):
+    def __init__(self, canvas, tag, offset, font_size, x, y):
         self.canvas_items = []
         self.canvas = canvas
         self.font_size = font_size
-        self.length = tk.font.Font(family='Helvetica', size=self.font_size).measure(tag)
+        self.length = tk.font.Font(family='Helvetica',
+                                   size=self.font_size).measure(tag)
         
         self.canvas_items.append(
             self.canvas.create_arc(4, offset+30, 14, offset+20,

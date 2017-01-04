@@ -9,7 +9,7 @@ import subprocess
 # Custom Python libraries
 from mp4_parser import mp4_parser
 import filename_parser
-from tag_field import rounded_box
+from tag_field import tag_field
 
 # A video_file has a filepath, creation time (or best guess), a file hash
 # (to verify if the file changes), last modification date, and dictionary of
@@ -92,7 +92,8 @@ class video_file(object):
                                                      self.font_size),
                                  tag='datetime')
             )
-        self.rounded_box = rounded_box(self.canvas, 'manfrommars', offset, self.font_size)
+        self.rounded_box = tag_field(self.canvas, offset, ['manfrommars'],
+                                     self.font_size)
         # Finally, bind to left mouse clicks
         for item in self.canvas_items:
             self.canvas.tag_bind(item, '<ButtonPress-1>', self.selected)
