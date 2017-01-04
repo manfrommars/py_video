@@ -9,6 +9,7 @@ import subprocess
 # Custom Python libraries
 from mp4_parser import mp4_parser
 import filename_parser
+from rounded_box import rounded_box
 
 # A video_file has a filepath, creation time (or best guess), a file hash
 # (to verify if the file changes), last modification date, and dictionary of
@@ -91,12 +92,13 @@ class video_file(object):
                                                      self.font_size),
                                  tag='datetime')
             )
-        self.canvas_items.append(
-            self.canvas.create_arc(4, offset+30, 14, offset+20,
-                                   start=90, extent=90,
-                                   fill="gray", outline='',
-                                   style=tk.PIESLICE)
-            )
+##        self.canvas_items.append(
+##            self.canvas.create_arc(4, offset+30, 14, offset+20,
+##                                   start=90, extent=90,
+##                                   fill="gray", outline='',
+##                                   style=tk.PIESLICE)
+##            )
+        self.rounded_box = rounded_box(self.canvas, 'manfrommars', offset, self.font_size)
         # Finally, bind to left mouse clicks
         for item in self.canvas_items:
             self.canvas.tag_bind(item, '<ButtonPress-1>', self.selected)
