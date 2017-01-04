@@ -9,7 +9,7 @@ import subprocess
 # Custom Python libraries
 from mp4_parser import mp4_parser
 import filename_parser
-from rounded_box import rounded_box
+from tag_field import rounded_box
 
 # A video_file has a filepath, creation time (or best guess), a file hash
 # (to verify if the file changes), last modification date, and dictionary of

@@ -1,5 +1,17 @@
 import tkinter as tk
 
+class tag_field(object):
+    # Fields:
+    # canvas    the canvas to draw on
+    # offset    vertical offset from the top to this entry
+    # tags      dictionary of tags
+    # font_size font size to print
+    def __init__(self, canvas, offset, tags, font_size):
+        self.canvas    = canvas
+        self.offset    = offset
+        self.tags      = tags
+        self.font_size = font_size
+
 class rounded_box(object):
     def __init__(self, canvas, tag, offset, font_size):
         self.canvas_items = []
