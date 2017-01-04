@@ -55,4 +55,6 @@ class rounded_box(object):
             )
         
     def hide(self):
-        return
+        for canvas_item in self.canvas_items:
+            self.canvas.delete(canvas_item)
+        self.canvas_items.clear()

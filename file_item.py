@@ -101,6 +101,7 @@ class video_file(object):
         for canvas_item in self.canvas_items:
             self.canvas.delete(canvas_item)
         self.canvas_items.clear()
+        self.rounded_box.hide()
     def selected(self, event):
         print('Selected: %s' % self.get_filename())
         # Use "find_overlapping" to get the bounding rectangle, which will be
