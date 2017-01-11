@@ -95,7 +95,8 @@ class video_file(object):
         self.rounded_box = tag_field(self.canvas, offset,
                                      {'leads':['manfrommars',
                                                'tom', 'dick', 'harry'],
-                                      'follows':['suzie', 'gladys', 'eunice']},
+                                      'follows':['suzie', 'gladys', 'eunice'],
+                                      'event':['Rock That Swing Festival']},
                                      self.font_size)
         # Finally, bind to left mouse clicks
         for item in self.canvas_items:

@@ -14,8 +14,9 @@ class tag_field(object):
         # Starting position of tag field
         self.x = 4
         self.y = 10
-        # Each key should have at least one value in a list
+        # Iterate over the list of tags
         for key in tags:
+            # Each key should have at least one value in a list
             if len(tags[key]) < 1:
                 print('Error, key \'%s\' invalid' % key)
                 continue
@@ -27,9 +28,17 @@ class tag_field(object):
                     tag += ' %s,' % val
             length = tk.font.Font(family='Helvetica',
                                   size=self.font_size).measure(tag)
+            # Determine if this tag will fit
+            # if x == 4, at start nothing we can do
+            # otherwise, if x + length is greater than the size of the window,
+            # increase y
+            if self.x + length > 640:
+                self.x = 4
+                self.y += 20
             self.rounded_box = rounded_box(self.canvas, tag,
                                            self.offset, self.font_size,
                                            self.x, self.y, length)
+            self.x += length + 14
         # Add 
     def hide(self):
         self.rounded_box.hide()
