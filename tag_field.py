@@ -13,7 +13,7 @@ class tag_field(object):
         self.font_size = font_size
         # Starting position of tag field
         self.x = 4
-        self.y = 20
+        self.y = 10
         for tag in tags:
             self.rounded_box = rounded_box(self.canvas, tag,
                                            self.offset, self.font_size,
@@ -30,50 +30,53 @@ class rounded_box(object):
                                    size=self.font_size).measure(tag)
         
         self.canvas_items.append(
-            self.canvas.create_arc(4, offset+30, 14, offset+20,
+            self.canvas.create_arc(x+0 , offset+y+20,
+                                   x+10, offset+y+10,
                                    start=90, extent=90,
                                    fill="gray", outline='',
                                    style=tk.PIESLICE)
             )
         self.canvas_items.append(
-            self.canvas.create_arc(4+self.length, offset+30,
-                                   14+self.length, offset+20,
+            self.canvas.create_arc(x+0 +self.length, offset+y+20,
+                                   x+10+self.length, offset+y+10,
                                    start=0, extent=90,
                                    fill="gray", outline='',
                                    style=tk.PIESLICE)
             )
         self.canvas_items.append(
-            self.canvas.create_arc(4, offset+26+self.font_size,
-                                   14, offset+16+self.font_size,
+            self.canvas.create_arc(x+0 , offset+y+16+self.font_size,
+                                   x+10, offset+y+6 +self.font_size,
                                    start=180, extent=90,
                                    fill="gray", outline='',
                                    style=tk.PIESLICE)
             )
         self.canvas_items.append(
-            self.canvas.create_arc(4+self.length, offset+26+self.font_size,
-                                   14+self.length, offset+16+self.font_size,
+            self.canvas.create_arc(x+0 +self.length, offset+y+16+self.font_size,
+                                   x+10+self.length, offset+y+6 +self.font_size,
                                    start=270, extent=90,
                                    fill="gray", outline='',
                                    style=tk.PIESLICE)
             )
         self.canvas_items.append(
-            self.canvas.create_rectangle(4, offset+25,
-                                         14+self.length,
-                                      offset + 21+self.font_size,
-                                      outline='gray', fill='gray')
+            self.canvas.create_rectangle(x+0,
+                                             offset+y+15,
+                                         x+10+self.length,
+                                             offset+y+11+self.font_size,
+                                         outline='gray', fill='gray')
             )
         self.canvas_items.append(
-            self.canvas.create_rectangle(9, offset+20,
-                                         9+self.length,
-                                      offset + 26+self.font_size,
-                                      outline='gray', fill='gray')
+            self.canvas.create_rectangle(x+5,
+                                             offset+y+10,
+                                         x+5+self.length,
+                                             offset+y+16+self.font_size,
+                                         outline='gray', fill='gray')
             )
         self.canvas_items.append(
-            self.canvas.create_text(9, offset+7+self.font_size,
-                                 text=tag,
-                                 anchor=tk.NW, font=('Helvetica',
-                                                     self.font_size),
-                                 tag='datetime')
+            self.canvas.create_text(x+5, offset+y-3+self.font_size,
+                                    text=tag,
+                                    anchor=tk.NW, font=('Helvetica',
+                                                        self.font_size),
+                                    tag='datetime')
             )
         
     def hide(self):
