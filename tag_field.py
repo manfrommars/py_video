@@ -14,20 +14,31 @@ class tag_field(object):
         # Starting position of tag field
         self.x = 4
         self.y = 10
-        for tag in tags:
+        # Each key should have at least one value in a list
+        for key in tags:
+            if len(tags[key]) < 1:
+                print('Error, key \'%s\' invalid' % key)
+                continue
+            tag = '%s: ' % key
+            for val in tags[key]:
+                if val == tags[key][-1]:
+                    tag += ' %s' % val
+                else:
+                    tag += ' %s,' % val
+            length = tk.font.Font(family='Helvetica',
+                                  size=self.font_size).measure(tag)
             self.rounded_box = rounded_box(self.canvas, tag,
                                            self.offset, self.font_size,
-                                           self.x, self.y)
+                                           self.x, self.y, length)
+        # Add 
     def hide(self):
         self.rounded_box.hide()
 
 class rounded_box(object):
-    def __init__(self, canvas, tag, offset, font_size, x, y):
+    def __init__(self, canvas, tag, offset, font_size, x, y, length):
         self.canvas_items = []
         self.canvas = canvas
         self.font_size = font_size
-        self.length = tk.font.Font(family='Helvetica',
-                                   size=self.font_size).measure(tag)
         
         self.canvas_items.append(
             self.canvas.create_arc(x+0 , offset+y+20,
@@ -37,8 +48,8 @@ class rounded_box(object):
                                    style=tk.PIESLICE)
             )
         self.canvas_items.append(
-            self.canvas.create_arc(x+0 +self.length, offset+y+20,
-                                   x+10+self.length, offset+y+10,
+            self.canvas.create_arc(x+0 +length, offset+y+20,
+                                   x+10+length, offset+y+10,
                                    start=0, extent=90,
                                    fill="gray", outline='',
                                    style=tk.PIESLICE)
@@ -51,8 +62,8 @@ class rounded_box(object):
                                    style=tk.PIESLICE)
             )
         self.canvas_items.append(
-            self.canvas.create_arc(x+0 +self.length, offset+y+16+self.font_size,
-                                   x+10+self.length, offset+y+6 +self.font_size,
+            self.canvas.create_arc(x+0 +length, offset+y+16+self.font_size,
+                                   x+10+length, offset+y+6 +self.font_size,
                                    start=270, extent=90,
                                    fill="gray", outline='',
                                    style=tk.PIESLICE)
@@ -60,14 +71,14 @@ class rounded_box(object):
         self.canvas_items.append(
             self.canvas.create_rectangle(x+0,
                                              offset+y+15,
-                                         x+10+self.length,
+                                         x+10+length,
                                              offset+y+11+self.font_size,
                                          outline='gray', fill='gray')
             )
         self.canvas_items.append(
             self.canvas.create_rectangle(x+5,
                                              offset+y+10,
-                                         x+5+self.length,
+                                         x+5+length,
                                              offset+y+16+self.font_size,
                                          outline='gray', fill='gray')
             )

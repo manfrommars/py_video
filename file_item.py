@@ -92,7 +92,10 @@ class video_file(object):
                                                      self.font_size),
                                  tag='datetime')
             )
-        self.rounded_box = tag_field(self.canvas, offset, ['manfrommars'],
+        self.rounded_box = tag_field(self.canvas, offset,
+                                     {'leads':['manfrommars',
+                                               'tom', 'dick', 'harry'],
+                                      'follows':['suzie', 'gladys', 'eunice']},
                                      self.font_size)
         # Finally, bind to left mouse clicks
         for item in self.canvas_items:
