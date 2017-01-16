@@ -74,11 +74,6 @@ class video_file(object):
         return self.tags
     def draw(self, offset):
         self.canvas_items.append(
-            self.canvas.create_rectangle(0, offset, self.width,
-                                      offset + self.size,
-                                      outline='gray', fill='white')
-            )
-        self.canvas_items.append(
             self.canvas.create_text(4, offset,
                                  text=self.get_filename(),
                                  anchor=tk.NW, font=('Helvetica',
@@ -98,6 +93,12 @@ class video_file(object):
                                       'follows':['suzie', 'gladys', 'eunice'],
                                       'event':['Rock That Swing Festival']},
                                      self.font_size)
+        self.size += self.rounded_box.height_offset
+        self.canvas_items.append(
+            self.canvas.create_rectangle(0, offset, self.width,
+                                      offset + self.size,
+                                      outline='gray', fill='')
+            )
         # Finally, bind to left mouse clicks
         for item in self.canvas_items:
             self.canvas.tag_bind(item, '<ButtonPress-1>', self.selected)
@@ -105,6 +106,8 @@ class video_file(object):
     def hide(self):
         for canvas_item in self.canvas_items:
             self.canvas.delete(canvas_item)
+        self.size -= self.rounded_box.height_offset
+        self.rounded_box.hide()
         self.canvas_items.clear()
         self.rounded_box.hide()
     def selected(self, event):

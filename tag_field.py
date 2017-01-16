@@ -7,10 +7,12 @@ class tag_field(object):
     # tags      dictionary of tags
     # font_size font size to print
     def __init__(self, canvas, offset, tags, font_size):
-        self.canvas    = canvas
-        self.offset    = offset
-        self.tags      = tags
-        self.font_size = font_size
+        self.canvas        = canvas
+        self.offset        = offset
+        self.tags          = tags
+        self.font_size     = font_size
+        self.height_offset = 0
+        self.tag_boxes     = []
         # Starting position of tag field
         self.x = 4
         self.y = 10
@@ -34,14 +36,17 @@ class tag_field(object):
             # increase y
             if self.x + length > 640:
                 self.x = 4
-                self.y += 20
-            self.rounded_box = rounded_box(self.canvas, tag,
+                self.y += 24
+                self.height_offset += 24
+            self.tag_boxes.append(rounded_box(self.canvas, tag,
                                            self.offset, self.font_size,
-                                           self.x, self.y, length)
+                                           self.x, self.y, length))
             self.x += length + 14
         # Add 
     def hide(self):
-        self.rounded_box.hide()
+        for box in self.tag_boxes:
+            box.hide()
+        self.height_offset = 0
 
 class rounded_box(object):
     def __init__(self, canvas, tag, offset, font_size, x, y, length):
