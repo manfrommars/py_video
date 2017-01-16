@@ -44,6 +44,11 @@ class tag_field(object):
                                            self.x, self.y, length))
             self.x += length + 14
         # Add tag
+        length = tk.font.Font(family='Helvetica',
+                              size=self.font_size).measure("Add tag")
+        self.btn = rounded_button(self.canvas, "Add tag",
+                                           self.offset, self.font_size,
+                                           self.x, self.y, length)
         # newtagbtn = add_tag.add_tag(self.canvas)
     def hide(self):
         for box in self.tag_boxes:
@@ -51,7 +56,8 @@ class tag_field(object):
         self.height_offset = 0
 
 class rounded_box(object):
-    def __init__(self, canvas, tag, offset, font_size, x, y, length):
+    def __init__(self, canvas, tag, offset, font_size, x, y, length,
+                 color="gray"):
         self.canvas_items = []
         self.canvas = canvas
         self.font_size = font_size
@@ -60,28 +66,28 @@ class rounded_box(object):
             self.canvas.create_arc(x+0 , offset+y+20,
                                    x+10, offset+y+10,
                                    start=90, extent=90,
-                                   fill="gray", outline='',
+                                   fill=color, outline='',
                                    style=tk.PIESLICE)
             )
         self.canvas_items.append(
             self.canvas.create_arc(x+0 +length, offset+y+20,
                                    x+10+length, offset+y+10,
                                    start=0, extent=90,
-                                   fill="gray", outline='',
+                                   fill=color, outline='',
                                    style=tk.PIESLICE)
             )
         self.canvas_items.append(
             self.canvas.create_arc(x+0 , offset+y+16+self.font_size,
                                    x+10, offset+y+6 +self.font_size,
                                    start=180, extent=90,
-                                   fill="gray", outline='',
+                                   fill=color, outline='',
                                    style=tk.PIESLICE)
             )
         self.canvas_items.append(
             self.canvas.create_arc(x+0 +length, offset+y+16+self.font_size,
                                    x+10+length, offset+y+6 +self.font_size,
                                    start=270, extent=90,
-                                   fill="gray", outline='',
+                                   fill=color, outline='',
                                    style=tk.PIESLICE)
             )
         self.canvas_items.append(
@@ -89,14 +95,14 @@ class rounded_box(object):
                                              offset+y+15,
                                          x+10+length,
                                              offset+y+11+self.font_size,
-                                         outline='gray', fill='gray')
+                                         outline=color, fill=color)
             )
         self.canvas_items.append(
             self.canvas.create_rectangle(x+5,
                                              offset+y+10,
                                          x+5+length,
                                              offset+y+16+self.font_size,
-                                         outline='gray', fill='gray')
+                                         outline=color, fill=color)
             )
         self.canvas_items.append(
             self.canvas.create_text(x+5, offset+y-3+self.font_size,
@@ -110,3 +116,12 @@ class rounded_box(object):
         for canvas_item in self.canvas_items:
             self.canvas.delete(canvas_item)
         self.canvas_items.clear()
+
+class rounded_button(rounded_box):
+    def __init__(self, canvas, tag, offset, font_size, x, y, length):
+        rounded_box.__init__(self, canvas, tag, offset, font_size, x, y, length,
+                             "slate gray")
+        for item in self.canvas_items:
+            self.canvas.tag_bind(item, '<Button-1>', self.button_select)
+    def button_select(self, event=None):
+        add_tag.add_tag(self.canvas)
