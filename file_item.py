@@ -87,13 +87,13 @@ class video_file(object):
                                                      self.font_size),
                                  tag='datetime')
             )
-        self.rounded_box = tag_field(self.canvas, offset,
+        self.tags = tag_field(self.canvas, offset,
                                      {'leads':['manfrommars',
                                                'tom', 'dick', 'harry'],
                                       'follows':['suzie', 'gladys', 'eunice'],
                                       'event':['Rock That Swing Festival']},
                                      self.font_size)
-        self.size += self.rounded_box.height_offset
+        self.size += self.tags.height_offset
         self.canvas_items.append(
             self.canvas.create_rectangle(0, offset, self.width,
                                       offset + self.size,
@@ -106,10 +106,9 @@ class video_file(object):
     def hide(self):
         for canvas_item in self.canvas_items:
             self.canvas.delete(canvas_item)
-        self.size -= self.rounded_box.height_offset
-        self.rounded_box.hide()
+        self.size -= self.tags.height_offset
+        self.tags.hide()
         self.canvas_items.clear()
-        self.rounded_box.hide()
     def selected(self, event):
         print('Selected: %s' % self.get_filename())
         # Use "find_overlapping" to get the bounding rectangle, which will be
