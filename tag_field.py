@@ -54,6 +54,7 @@ class tag_field(object):
         for box in self.tag_boxes:
             box.hide()
         self.height_offset = 0
+        self.btn.hide()
 
 class rounded_box(object):
     def __init__(self, canvas, tag, offset, font_size, x, y, length,
@@ -125,3 +126,4 @@ class rounded_button(rounded_box):
             self.canvas.tag_bind(item, '<Button-1>', self.button_select)
     def button_select(self, event=None):
         add_tag.add_tag(self.canvas)
+
