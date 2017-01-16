@@ -1,4 +1,5 @@
 import tkinter as tk
+import add_tag
 
 class tag_field(object):
     # Fields:
@@ -42,7 +43,8 @@ class tag_field(object):
                                            self.offset, self.font_size,
                                            self.x, self.y, length))
             self.x += length + 14
-        # Add 
+        # Add tag
+        # newtagbtn = add_tag.add_tag(self.canvas)
     def hide(self):
         for box in self.tag_boxes:
             box.hide()

@@ -42,7 +42,9 @@ class video_file(object):
         else:
             self.creation_time = file_dt
         self.file_hash = self.get_md5sum(self.filepath)
-        self.tags = {}
+        self.video_tags = {'leads':['manfrommars', 'tom', 'dick', 'harry'],
+                           'follows':['suzie', 'gladys', 'eunice'],
+                           'event':['Rock That Swing Festival']}
         # Display elements
         # Arbitrary size for now
         self.size = 45
@@ -87,12 +89,8 @@ class video_file(object):
                                                      self.font_size),
                                  tag='datetime')
             )
-        self.tags = tag_field(self.canvas, offset,
-                                     {'leads':['manfrommars',
-                                               'tom', 'dick', 'harry'],
-                                      'follows':['suzie', 'gladys', 'eunice'],
-                                      'event':['Rock That Swing Festival']},
-                                     self.font_size)
+        self.tags = tag_field(self.canvas, offset, self.video_tags,
+                              self.font_size)
         self.size += self.tags.height_offset
         self.canvas_items.append(
             self.canvas.create_rectangle(0, offset, self.width,
@@ -122,7 +120,10 @@ class video_file(object):
         state = self.__dict__.copy()
         del state['canvas']
         del state['canvas_items']
+        del state['tags']
+        del state['size']
         return state
     def __setstate__(self, state):
         self.__dict__=state
         self.__dict__['canvas_items'] = []
+        self.__dict__['size'] = 45
