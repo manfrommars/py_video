@@ -45,10 +45,10 @@ class tag_field(object):
             self.x += length + 14
         # Add tag
         length = tk.font.Font(family='Helvetica',
-                              size=self.font_size).measure("Add tag")
-        self.btn = rounded_button(self.canvas, "Add tag",
+                              size=self.font_size).measure("Edit tags")
+        self.btn = rounded_button(self.canvas, "Edit tags",
                                            self.offset, self.font_size,
-                                           self.x, self.y, length)
+                                           self.x, self.y, length, self.tags)
         # newtagbtn = add_tag.add_tag(self.canvas)
     def hide(self):
         for box in self.tag_boxes:
@@ -119,11 +119,12 @@ class rounded_box(object):
         self.canvas_items.clear()
 
 class rounded_button(rounded_box):
-    def __init__(self, canvas, tag, offset, font_size, x, y, length):
+    def __init__(self, canvas, tag, offset, font_size, x, y, length, tags):
         rounded_box.__init__(self, canvas, tag, offset, font_size, x, y, length,
                              "slate gray")
+        self.tags = tags
         for item in self.canvas_items:
             self.canvas.tag_bind(item, '<Button-1>', self.button_select)
     def button_select(self, event=None):
-        add_tag.add_tag(self.canvas)
+        add_tag.add_tag(self.canvas, self.tags)
 
