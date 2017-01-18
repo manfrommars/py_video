@@ -16,7 +16,7 @@ from tag_field import tag_field
 # tags
 class video_file(object):
     def __init__(self, filepath, canvas, width=615, font_size=15):
-        self.version=1
+        self.version=0.1
         # Clean up the filepath
         self.filepath = os.path.expanduser(filepath)
         # Verify the file exists

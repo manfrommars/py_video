@@ -14,6 +14,7 @@ class tag_field(object):
         self.font_size     = font_size
         self.height_offset = 0
         self.tag_boxes     = []
+        self.btn           = None
         # Starting position of tag field
         self.x = 4
         self.y = 10
@@ -23,38 +24,53 @@ class tag_field(object):
             if len(tags[key]) < 1:
                 print('Error, key \'%s\' invalid' % key)
                 continue
-            tag = '%s: ' % key
-            for val in tags[key]:
-                if val == tags[key][-1]:
-                    tag += ' %s' % val
-                else:
-                    tag += ' %s,' % val
-            length = tk.font.Font(family='Helvetica',
-                                  size=self.font_size).measure(tag)
-            # Determine if this tag will fit
-            # if x == 4, at start nothing we can do
-            # otherwise, if x + length is greater than the size of the window,
-            # increase y
-            if self.x + length > 640:
-                self.x = 4
-                self.y += 24
-                self.height_offset += 24
-            self.tag_boxes.append(rounded_box(self.canvas, tag,
-                                           self.offset, self.font_size,
-                                           self.x, self.y, length))
-            self.x += length + 14
-        # Add tag
-        length = tk.font.Font(family='Helvetica',
-                              size=self.font_size).measure("Edit tags")
-        self.btn = rounded_button(self.canvas, "Edit tags",
-                                           self.offset, self.font_size,
-                                           self.x, self.y, length, self.tags)
-        # newtagbtn = add_tag.add_tag(self.canvas)
+            self.add_key_val(key, tags[key])
+        self.add_button()
     def hide(self):
         for box in self.tag_boxes:
             box.hide()
         self.height_offset = 0
         self.btn.hide()
+    def check_position(self, length):
+        if self.x + length > 640:
+            self.x = 4
+            self.y += 24
+            self.height_offset += 24
+    def add_key_val(self, key, values):
+        add_btn = False
+        if self.btn != None:
+            # Remove the button before adding a new tag
+            self.btn.hide()
+            add_btn = True
+        tag = '%s: ' % key
+        for val in values:
+            if val == values[-1]:
+                tag += ' %s' % val
+            else:
+                tag += ' %s,' % val
+        length = tk.font.Font(family='Helvetica',
+                              size=self.font_size).measure(tag)
+        # Determine if this tag will fit
+        # if x == 4, at start nothing we can do
+        # otherwise, if x + length is greater than the size of the window,
+        # increase y
+        self.check_position(length)
+        self.tag_boxes.append(rounded_box(self.canvas, tag,
+                                          self.offset, self.font_size,
+                                          self.x, self.y, length))
+        self.x += length + 14
+        # add the button back in
+        if add_btn:
+            self.add_button()
+    def add_button(self):
+        # Add a rounded box at the end that opens a new window to edit tags
+        length = tk.font.Font(family='Helvetica',
+                              size=self.font_size).measure("Edit tags")
+        self.check_position(length)
+        self.btn = rounded_button(self.canvas, "Edit tags",
+                                  self.offset, self.font_size,
+                                  self.x, self.y, length, self.tags,
+                                  self.add_key_val)
 
 class rounded_box(object):
     def __init__(self, canvas, tag, offset, font_size, x, y, length,
@@ -119,12 +135,14 @@ class rounded_box(object):
         self.canvas_items.clear()
 
 class rounded_button(rounded_box):
-    def __init__(self, canvas, tag, offset, font_size, x, y, length, tags):
+    def __init__(self, canvas, tag, offset, font_size, x, y, length, tags,
+                 add_key_val):
+        self.add_key_val = add_key_val
         rounded_box.__init__(self, canvas, tag, offset, font_size, x, y, length,
                              "slate gray")
         self.tags = tags
         for item in self.canvas_items:
             self.canvas.tag_bind(item, '<Button-1>', self.button_select)
     def button_select(self, event=None):
-        add_tag.add_tag(self.canvas, self.tags)
+        add_tag.add_tag(self.canvas, self.tags, self.add_key_val)
 

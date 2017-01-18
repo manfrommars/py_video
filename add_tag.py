@@ -1,9 +1,10 @@
 import tkinter as tk
 
 class add_tag():
-    def __init__(self, canvas, tags):
+    def __init__(self, canvas, tags, add_key_val):
         self.tags = tags
         self.tag_texts = []
+        self.add_key_val = add_key_val
         # Create popup window for entering tags
         self.t = tk.Toplevel(canvas)
         self.t.wm_title("Edit Tags")
@@ -49,6 +50,9 @@ class add_tag():
         print(val)
         vallist = val.split(',')
         print(vallist)
+        # add the key:values to the tag_field (the local listing will need to be
+        # updated from there eventually)
+        self.add_key_val(key, vallist)
         # add the key:value to the local listing
         self.tags[key] = vallist
         text = '%s:' % key
