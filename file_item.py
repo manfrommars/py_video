@@ -66,17 +66,15 @@ class video_file(object):
     def get_filename(self):
         return os.path.basename(self.filepath)
     def add_tag(self, tag, value):
-        # Check to see if this is new
-        if not tag in self.video_tags:
-            self.video_tags[tag] = value
-            self.redraw()
-            return True
-        else:
-            #print('Tag [%s] exists: %s'%(tag, self.video_tags[tag]))
-            return False
+        # If this is new, it will be added, otherwise it will just be updated
+        self.video_tags[tag] = value
+        # Update display
+        self.redraw()
+        # NOTE: database not updated yet
     def get_tags(self):
         return self.tags
-    def draw(self, offset):
+    def draw(self, offset, redraw):
+        self.redraw = redraw
         self.canvas_items.append(
             self.canvas.create_text(4, offset,
                                  text=self.get_filename(),
