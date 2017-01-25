@@ -7,7 +7,7 @@ class tag_field(object):
     # offset    vertical offset from the top to this entry
     # tags      dictionary of tags
     # font_size font size to print
-    def __init__(self, canvas, offset, tags, font_size):
+    def __init__(self, canvas, offset, tags, font_size, add_tag):
         self.canvas        = canvas
         self.offset        = offset
         self.tags          = tags
@@ -15,6 +15,7 @@ class tag_field(object):
         self.height_offset = 0
         self.tag_boxes     = []
         self.btn           = None
+        self.add_tag       = add_tag
         # Starting position of tag field
         self.x = 4
         self.y = 10
@@ -70,7 +71,7 @@ class tag_field(object):
         self.btn = rounded_button(self.canvas, "Edit tags",
                                   self.offset, self.font_size,
                                   self.x, self.y, length, self.tags,
-                                  self.add_key_val)
+                                  self.add_tag)
 
 class rounded_box(object):
     def __init__(self, canvas, tag, offset, font_size, x, y, length,

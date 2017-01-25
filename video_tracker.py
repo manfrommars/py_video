@@ -107,7 +107,8 @@ class Application(tk.Frame):
         if not os.path.exists(filepath):
             return None
         filename = os.path.basename(filepath)
-        vid_file = file_item.video_file(filepath, self.res)
+        vid_file = file_item.video_file(filepath, self.res,
+                                        self.restore_file_display)
         # Check whether this file exists already
         for f in self.vid_files:
             if f.get_hash() == vid_file.get_hash():

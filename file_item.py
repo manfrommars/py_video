@@ -15,8 +15,9 @@ from tag_field import tag_field
 # (to verify if the file changes), last modification date, and dictionary of
 # tags
 class video_file(object):
-    def __init__(self, filepath, canvas, width=615, font_size=15):
+    def __init__(self, filepath, canvas, redraw, width=615, font_size=15):
         self.version=0.1
+        self.redraw = redraw
         # Clean up the filepath
         self.filepath = os.path.expanduser(filepath)
         # Verify the file exists
@@ -66,11 +67,12 @@ class video_file(object):
         return os.path.basename(self.filepath)
     def add_tag(self, tag, value):
         # Check to see if this is new
-        if not self.tags[tag]:
-            self.tags[tag] = value
+        if not tag in self.video_tags:
+            self.video_tags[tag] = value
+            self.redraw()
             return True
         else:
-            print('Tag [%s] exists: %s'%(tag, self.tags[tag]))
+            #print('Tag [%s] exists: %s'%(tag, self.video_tags[tag]))
             return False
     def get_tags(self):
         return self.tags
@@ -90,7 +92,7 @@ class video_file(object):
                                  tag='datetime')
             )
         self.tags = tag_field(self.canvas, offset, self.video_tags,
-                              self.font_size)
+                              self.font_size, self.add_tag)
         self.size += self.tags.height_offset
         self.canvas_items.append(
             self.canvas.create_rectangle(0, offset, self.width,
@@ -122,6 +124,7 @@ class video_file(object):
         del state['canvas_items']
         del state['tags']
         del state['size']
+        del state['redraw']
         return state
     def __setstate__(self, state):
         self.__dict__=state
