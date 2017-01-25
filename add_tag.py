@@ -50,20 +50,26 @@ class add_tag():
         print(val)
         vallist = val.split(',')
         print(vallist)
+        text = '%s:' % key
+        for val in vallist:
+            if val == vallist[-1]:
+                text += ' %s' % val
+            else:
+                text += ' %s,' % val
+        if key in self.tags:
+            for t in self.tag_texts:
+                if t['text'].startswith(key):
+                    t['text'] = text
+        else:
+            self.tag_texts.append(tk.Label(self.t, text=text, justify=tk.LEFT,
+                                           anchor=tk.W))
+            self.tag_texts[-1].pack(fill=tk.X, expand=False, padx=10)
         # add the key:values to the tag_field (the local listing will need to be
         # updated from there eventually)
         self.add_key_val(key, vallist)
         # add the key:value to the local listing
         self.tags[key] = vallist
-        text = '%s:' % key
-        for val in self.tags[key]:
-            if val == self.tags[key][-1]:
-                text += ' %s' % val
-            else:
-                text += ' %s,' % val
-        self.tag_texts.append(tk.Label(self.t, text=text, justify=tk.LEFT,
-                                       anchor=tk.W))
-        self.tag_texts[-1].pack(fill=tk.X, expand=False, padx=10)
+
     def clear_key(self, event=None):
         self.tag_key.delete(0, tk.END)
     def clear_value(self, event=None):
