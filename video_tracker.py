@@ -137,7 +137,8 @@ class Application(tk.Frame):
         # Each file is given three lines of space
         # First line will be filename, then creation date
         # Second line will be tags
-        self.draw_depth += vid_file_info.draw(self.draw_depth)
+        self.draw_depth += vid_file_info.draw(self.draw_depth,
+                                              self.restore_file_display)
         #print(vid_file_info.get_filename())
 
         # Update scroll region
