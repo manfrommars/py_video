@@ -9,6 +9,7 @@ import sqlite3
 class Application(tk.Frame):
     """Widget containing information about user-loaded videos."""
     table_name = 'video_table'
+    tag_table = 'video_tags_table'
     t_ID = 'ID'
     t_filename = 'filename'
     t_cr_time = 'creation_time'
@@ -46,7 +47,7 @@ class Application(tk.Frame):
                                                 ct='TEXT'))
                 self.cursor.execute("CREATE TABLE {tn} "\
                                     "({tid} INTEGER PRIMARY KEY)"\
-                                    .format(tid=self.t_ID))
+                                    .format(tn=self.tag_table, tid=self.t_ID))
             except:
                 pass
         if os.path.exists(self.data_file):
