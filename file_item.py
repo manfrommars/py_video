@@ -65,6 +65,8 @@ class video_file(object):
         return self.file_hash
     def get_filename(self):
         return os.path.basename(self.filepath)
+    def get_filepath(self):
+        return self.filepath
     def add_tag(self, tag, value):
         # If this is new, it will be added, otherwise it will just be updated
         self.video_tags[tag] = value
@@ -72,7 +74,7 @@ class video_file(object):
         self.redraw()
         # NOTE: database not updated yet
     def get_tags(self):
-        return self.tags
+        return self.video_tags
     def draw(self, offset, redraw):
         self.redraw = redraw
         self.canvas_items.append(
