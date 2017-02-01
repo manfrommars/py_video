@@ -9,6 +9,7 @@ import sqlite3
 class Application(tk.Frame):
     """Widget containing information about user-loaded videos."""
     table_name = 'video_table'
+    t_ID = 'ID'
     t_filename = 'filename'
     t_cr_time = 'creation_time'
     t_file_hash = 'file_hash'
@@ -31,16 +32,21 @@ class Application(tk.Frame):
             data = self.cursor.fetchall()
             print(data)
         except:
-            self.cursor.execute("CREATE TABLE {tn} ({f} {ft})"\
-                                .format(tn=self.table_name, f=self.t_filename,
-                                        ft='INTEGER'))
-            self.db.commit()
             try:
+                self.cursor.execute("CREATE TABLE {tn} "\
+                                    "({tid} INTEGER PRIMARY KEY AUTOINCREMENT,"\
+                                    "{f} {ft})"\
+                                    .format(tid=self.t_ID, tn=self.table_name,
+                                            f=self.t_filename, ft='INTEGER'))
+                self.db.commit()
                 for t_col in self.t_columns:
                     self.cursor.execute("ALTER TABLE {tn} "\
                                         "ADD COLUMN '{cn}' {ct}"\
                                         .format(tn=self.table_name, cn=t_col,
                                                 ct='TEXT'))
+                self.cursor.execute("CREATE TABLE {tn} "\
+                                    "({tid} INTEGER PRIMARY KEY)"\
+                                    .format(tid=self.t_ID))
             except:
                 pass
         if os.path.exists(self.data_file):
@@ -166,15 +172,29 @@ class Application(tk.Frame):
         file_hash = str(vid_file_info.get_hash())
         video_tags = vid_file_info.get_tags()
         filename = vid_file_info.get_filepath()
-        insert_cmd="INSERT INTO {tn} ({fn}, {cr}, {fh}) "\
-                    "VALUES ('{mf}', '{tm}', '{mh}')"\
-                            .format(tn=self.table_name, fn=self.t_filename,
-                                    cr=self.t_cr_time, fh=self.t_file_hash,
-                                    mf=filename, tm=creation_time,
-                                    mh=file_hash)
+        insert_cmd = "INSERT INTO {tn} ({fn}, {cr}, {fh}) "\
+                     "VALUES ('{mf}', '{tm}', '{mh}')"\
+                     .format(tn=self.table_name, fn=self.t_filename,
+                             cr=self.t_cr_time, fh=self.t_file_hash,
+                             mf=filename, tm=creation_time,
+                             mh=file_hash)
         print(insert_cmd)
         self.cursor.execute(insert_cmd)
         self.db.commit()
+        # Feed our table index back to the file
+        fetch_cmd = "SELECT * FROM {tn} "\
+                    "WHERE {fn}='{mf}' "\
+                    "AND {fh}='{mh}';"\
+                    .format(tn=self.table_name, fn=self.t_filename,
+                            fh=self.t_file_hash, mf=filename, mh=file_hash)
+        self.cursor.execute(fetch_cmd)
+        rows = self.cursor.fetchall()
+        if len(rows) > 1:
+            print('More than one file matches the new addition, '\
+                  'aborting...')
+        else:
+            print(rows[0][0])
+            vid_file_info.set_table_index(rows[0][0])
     def display_add_file(self, vid_file_info):
         # Each file is given three lines of space
         # First line will be filename, then creation date

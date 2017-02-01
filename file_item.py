@@ -15,7 +15,8 @@ from tag_field import tag_field
 # (to verify if the file changes), last modification date, and dictionary of
 # tags
 class video_file(object):
-    def __init__(self, filepath, canvas, redraw, width=615, font_size=15):
+    def __init__(self, filepath, canvas, redraw, width=615, font_size=15,
+                 fdatetime=None, fhash=None, tags=None):
         self.version=0.1
         self.redraw = redraw
         # Clean up the filepath
@@ -26,26 +27,35 @@ class video_file(object):
                                     os.strerror(errno.ENOENT),
                                     self.filepath)
         filename = os.path.basename(self.filepath)
-        # Gather available data about the file
-        # For MP4 files, check for the creation date in the file
-        metadata_info = None
-        if os.path.splitext(filename)[-1].lower() == '.mp4':
-            creation_secs = mp4_parser.findMp4Field(self.filepath,
-                                                    'creation_time')
-            metadata_info = datetime.datetime(1901, 1, 1)
-            metadata_info += datetime.timedelta(seconds=creation_secs)
-        file_dt = filename_parser.datetimeFromFilename(filename)
-        if file_dt == datetime.datetime(1900, 1, 1, 0, 0, 0):
-            if metadata_info:
-                self.creation_time = metadata_info
+        if not fdatetime:
+            # Gather available data about the file
+            # For MP4 files, check for the creation date in the file
+            metadata_info = None
+            if os.path.splitext(filename)[-1].lower() == '.mp4':
+                creation_secs = mp4_parser.findMp4Field(self.filepath,
+                                                        'creation_time')
+                metadata_info = datetime.datetime(1901, 1, 1)
+                metadata_info += datetime.timedelta(seconds=creation_secs)
+            file_dt = filename_parser.datetimeFromFilename(filename)
+            if file_dt == datetime.datetime(1900, 1, 1, 0, 0, 0):
+                if metadata_info:
+                    self.creation_time = metadata_info
+                else:
+                    self.creation_time = None
             else:
-                self.creation_time = None
+                self.creation_time = file_dt
         else:
-            self.creation_time = file_dt
-        self.file_hash = self.get_md5sum(self.filepath)
-        self.video_tags = {'leads':['manfrommars', 'tom', 'dick', 'harry'],
-                           'follows':['suzie', 'gladys', 'eunice'],
-                           'event':['Rock That Swing Festival']}
+            self.creation_time = datetime
+        if not fhash:
+            self.file_hash = self.get_md5sum(self.filepath)
+        else:
+            self.file_hash = fhash
+        if not tags:
+            self.video_tags = {'leads':['manfrommars', 'tom', 'dick', 'harry'],
+                               'follows':['suzie', 'gladys', 'eunice'],
+                               'event':['Rock That Swing Festival']}
+        else:
+            self.video_tags = tags
         # Display elements
         # Arbitrary size for now
         self.size = 45
@@ -67,6 +77,9 @@ class video_file(object):
         return os.path.basename(self.filepath)
     def get_filepath(self):
         return self.filepath
+    def set_table_index(self, idx):
+        # Only ever set by the main tracker program
+        self.table_index = idx
     def add_tag(self, tag, value):
         # If this is new, it will be added, otherwise it will just be updated
         self.video_tags[tag] = value
