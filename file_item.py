@@ -3,6 +3,7 @@
 import os
 import errno
 import datetime
+import time
 import hashlib
 import tkinter as tk
 import subprocess
@@ -16,7 +17,7 @@ from tag_field import tag_field
 # tags
 class video_file(object):
     def __init__(self, filepath, canvas, redraw, width=615, font_size=15,
-                 fdatetime=None, fhash=None, tags=None):
+                 fdatetime=None, fhash=None, tags=None, table_index=None):
         self.version=0.1
         self.redraw = redraw
         # Clean up the filepath
@@ -45,7 +46,8 @@ class video_file(object):
             else:
                 self.creation_time = file_dt
         else:
-            self.creation_time = datetime
+            self.creation_time = datetime.datetime(*(time.strptime(fdatetime,
+                                                          '%Y-%m-%d %H:%M:%S')[0:6]))
         if not fhash:
             self.file_hash = self.get_md5sum(self.filepath)
         else:
@@ -56,6 +58,8 @@ class video_file(object):
                                'event':['Rock That Swing Festival']}
         else:
             self.video_tags = tags
+        if table_index:
+            self.table_index = table_index
         # Display elements
         # Arbitrary size for now
         self.size = 45

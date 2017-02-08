@@ -31,8 +31,16 @@ class Application(tk.Frame):
         try:
             self.cursor.execute("SELECT * from {tn}".format(tn=self.table_name))
             data = self.cursor.fetchall()
-            print(data)
+            for entry in data:
+                vf = file_item.video_file(entry[1], self.res,
+                                          self.restore_file_display,
+                                          fdatetime=entry[2],
+                                          fhash=entry[3],
+                                          table_index=entry[0])
+                self.vid_files.append(vf)
+                self.display_add_file(vf)
         except:
+            print('oops')
             try:
                 self.cursor.execute("CREATE TABLE {tn} "\
                                     "({tid} INTEGER PRIMARY KEY AUTOINCREMENT,"\
@@ -50,21 +58,21 @@ class Application(tk.Frame):
                                     .format(tn=self.tag_table, tid=self.t_ID))
             except:
                 pass
-        if os.path.exists(self.data_file):
-            # Load data
-            with open(self.data_file, 'rb') as dbfile:
-                try:
-                    while True:
-                        # Pickle will not save the canvas
-                        vid_file = pickle.load(dbfile)
-                        vid_file.canvas = self.res
-                        self.vid_files.append(vid_file)
-                        self.display_add_file(vid_file)
-                        #print(vid_file.get_hash())
-                        #print(vid_file.get_creation_time())
-                        #print(vid_file.get_tags())
-                except EOFError:
-                    pass
+##        if os.path.exists(self.data_file):
+##            # Load data
+##            with open(self.data_file, 'rb') as dbfile:
+##                try:
+##                    while True:
+##                        # Pickle will not save the canvas
+##                        vid_file = pickle.load(dbfile)
+##                        vid_file.canvas = self.res
+##                        self.vid_files.append(vid_file)
+##                        self.display_add_file(vid_file)
+##                        #print(vid_file.get_hash())
+##                        #print(vid_file.get_creation_time())
+##                        #print(vid_file.get_tags())
+##                except EOFError:
+##                    pass
     def create_widgets(self):
         # Search bar
         self.search_fr = tk.Frame(self.master, borderwidth=1,
