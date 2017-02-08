@@ -135,15 +135,3 @@ class video_file(object):
                  if f in self.canvas_items]
         if rect in local:
             subprocess.Popen(['open', self.filepath])
-##    def __getstate__(self):
-##        state = self.__dict__.copy()
-##        del state['canvas']
-##        del state['canvas_items']
-##        del state['tags']
-##        del state['size']
-##        del state['redraw']
-##        return state
-##    def __setstate__(self, state):
-##        self.__dict__=state
-##        self.__dict__['canvas_items'] = []
-##        self.__dict__['size'] = 45
