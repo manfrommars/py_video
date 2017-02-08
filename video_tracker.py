@@ -2,7 +2,6 @@ import file_item
 import os
 import sys
 import io
-import pickle
 import tkinter as tk
 import sqlite3
 
@@ -58,21 +57,6 @@ class Application(tk.Frame):
                                     .format(tn=self.tag_table, tid=self.t_ID))
             except:
                 pass
-##        if os.path.exists(self.data_file):
-##            # Load data
-##            with open(self.data_file, 'rb') as dbfile:
-##                try:
-##                    while True:
-##                        # Pickle will not save the canvas
-##                        vid_file = pickle.load(dbfile)
-##                        vid_file.canvas = self.res
-##                        self.vid_files.append(vid_file)
-##                        self.display_add_file(vid_file)
-##                        #print(vid_file.get_hash())
-##                        #print(vid_file.get_creation_time())
-##                        #print(vid_file.get_tags())
-##                except EOFError:
-##                    pass
     def create_widgets(self):
         # Search bar
         self.search_fr = tk.Frame(self.master, borderwidth=1,
@@ -174,8 +158,6 @@ class Application(tk.Frame):
         print(rect)
     # Add data from the video file to our pickeld database
     def update_stored_info(self, vid_file_info):
-        with open(self.data_file, 'ab') as data_file:
-            pickle.dump(vid_file_info, data_file)
         # Insert a new record into the SQL database
         creation_time = str(vid_file_info.get_creation_time())
         file_hash = str(vid_file_info.get_hash())
