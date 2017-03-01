@@ -17,7 +17,6 @@ class Application(tk.Frame):
     def __init__(self, master=None):
         # Initialize lists of data 
         self.vid_files  = [] # Representation of file data
-        self.data_file = 'videos.db'
         self.draw_depth = 0
         # Perform widget setup
         super().__init__(master)
@@ -28,17 +27,20 @@ class Application(tk.Frame):
         self.db = sqlite3.connect('sql-videos.db')
         self.cursor = self.db.cursor()
         try:
+            # Load the table of file information if it exists
             self.cursor.execute("SELECT * from {tn}".format(tn=self.table_name))
             data = self.cursor.fetchall()
             for entry in data:
                 vf = file_item.video_file(entry[1], self.res,
                                           self.restore_file_display,
+                                          self.update_tag,
                                           fdatetime=entry[2],
                                           fhash=entry[3],
                                           table_index=entry[0])
                 self.vid_files.append(vf)
                 self.display_add_file(vf)
         except:
+            # If the table does not exist, create one
             print('oops')
             try:
                 self.cursor.execute("CREATE TABLE {tn} "\
@@ -56,6 +58,7 @@ class Application(tk.Frame):
                                     "({tid} INTEGER PRIMARY KEY)"\
                                     .format(tn=self.tag_table, tid=self.t_ID))
             except:
+                print("Something went wrong")
                 pass
     def create_widgets(self):
         # Search bar
@@ -135,7 +138,8 @@ class Application(tk.Frame):
             return None
         filename = os.path.basename(filepath)
         vid_file = file_item.video_file(filepath, self.res,
-                                        self.restore_file_display)
+                                        self.restore_file_display,
+                                        self.update_tag, tags={})
         # Check whether this file exists already
         for f in self.vid_files:
             if f.get_hash() == vid_file.get_hash():
@@ -156,7 +160,7 @@ class Application(tk.Frame):
         rect = min(event.widget.find_overlapping(event.x, event.y, event.x+1,
                                                  event.y+1))
         print(rect)
-    # Add data from the video file to our pickeld database
+    # Add data from the video file to our SQL database
     def update_stored_info(self, vid_file_info):
         # Insert a new record into the SQL database
         creation_time = str(vid_file_info.get_creation_time())
@@ -184,8 +188,38 @@ class Application(tk.Frame):
             print('More than one file matches the new addition, '\
                   'aborting...')
         else:
-            print(rows[0][0])
-            vid_file_info.set_table_index(rows[0][0])
+            idx = rows[0][0]
+            vid_file_info.set_table_index(idx)
+            # Insert a new line in the tags table for this table index
+            insert_cmd = "INSERT INTO {tn} ({tid}) VALUES ({myid})"\
+                         .format(tn=self.tag_table, tid=self.t_ID, myid=idx)
+            print(insert_cmd)
+            self.cursor.execute(insert_cmd)
+            self.db.commit()
+    def update_tag(self, idx, tags):
+        # tags should be a dictionary of format {tag: value}
+        print(tags)
+        table_query = "PRAGMA table_info({tn})".format(tn=self.tag_table)
+        print(table_query)
+        self.cursor.execute(table_query)
+        columns = self.cursor.fetchall()
+        columns = [row[1] for row in columns]
+        print(columns)
+        for tag in tags:
+            db_val = ",".join(tags[tag])
+            print(db_val)
+            if tag not in columns:
+                # create the column, allow for empty
+                add_column = "ALTER TABLE {tn} ADD COLUMN '{cn}' TEXT"\
+                             .format(tn=self.tag_table, cn=tag)
+                self.cursor.execute(add_column)
+            # insert the value for the appropriate entry
+            update_cmd = "UPDATE {tn} SET {cn}=('{val}') WHERE {idx}={myid}"\
+                         .format(tn=self.tag_table, cn=tag, val=db_val,
+                                 idx=self.t_ID, myid=idx)
+            print(update_cmd)
+            self.cursor.execute(update_cmd)
+        self.db.commit()
     def display_add_file(self, vid_file_info):
         # Each file is given three lines of space
         # First line will be filename, then creation date

@@ -16,10 +16,13 @@ from tag_field import tag_field
 # (to verify if the file changes), last modification date, and dictionary of
 # tags
 class video_file(object):
-    def __init__(self, filepath, canvas, redraw, width=615, font_size=15,
-                 fdatetime=None, fhash=None, tags=None, table_index=None):
+    def __init__(self, filepath, canvas, redraw, tag_update, width=615,
+                 font_size=15, fdatetime=None, fhash=None, tags=None,
+                 table_index=None):
         self.version=0.1
         self.redraw = redraw
+        self.update_tag = tag_update
+        print('Got tags: %s' % tags)
         # Clean up the filepath
         self.filepath = os.path.expanduser(filepath)
         # Verify the file exists
@@ -52,7 +55,7 @@ class video_file(object):
             self.file_hash = self.get_md5sum(self.filepath)
         else:
             self.file_hash = fhash
-        if not tags:
+        if tags is None:
             self.video_tags = {'leads':['manfrommars', 'tom', 'dick', 'harry'],
                                'follows':['suzie', 'gladys', 'eunice'],
                                'event':['Rock That Swing Festival']}
@@ -87,6 +90,7 @@ class video_file(object):
     def add_tag(self, tag, value):
         # If this is new, it will be added, otherwise it will just be updated
         self.video_tags[tag] = value
+        self.update_tag(self.table_index, {tag: value})
         # Update display
         self.redraw()
         # NOTE: database not updated yet
