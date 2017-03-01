@@ -31,6 +31,18 @@ class Application(tk.Frame):
             self.cursor.execute("SELECT * from {tn}".format(tn=self.table_name))
             data = self.cursor.fetchall()
             for entry in data:
+                # Find the value's twin in the tags table
+                print(entry)
+                entry_idx = entry[0]
+                fetch_cmd = "SELECT * FROM {tn} "\
+                            "WHERE {idx}='{myid}';"\
+                            .format(tn=self.tag_table, idx=self.t_ID,
+                                    myid=entry_idx)
+                self.cursor.execute(fetch_cmd)
+                rows = self.cursor.fetchall()
+                print(rows)
+                print(rows[0].keys())
+                
                 vf = file_item.video_file(entry[1], self.res,
                                           self.restore_file_display,
                                           self.update_tag,
@@ -42,6 +54,8 @@ class Application(tk.Frame):
         except:
             # If the table does not exist, create one
             print('oops')
+            print(sys.exc_info())
+
             try:
                 self.cursor.execute("CREATE TABLE {tn} "\
                                     "({tid} INTEGER PRIMARY KEY AUTOINCREMENT,"\
@@ -59,6 +73,7 @@ class Application(tk.Frame):
                                     .format(tn=self.tag_table, tid=self.t_ID))
             except:
                 print("Something went wrong")
+                print(sys.exc_info())
                 pass
     def create_widgets(self):
         # Search bar
