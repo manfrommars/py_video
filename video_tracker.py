@@ -28,8 +28,12 @@ class Application(tk.Frame):
         self.cursor = self.db.cursor()
         try:
             # Load the table of file information if it exists
-            self.cursor.execute("SELECT * from {tn}".format(tn=self.table_name))
+            self.cursor.execute("SELECT * FROM {tn}".format(tn=self.table_name))
             data = self.cursor.fetchall()
+            # Get the column names
+            names = self.db.execute("SELECT * FROM {tn}"\
+                                    .format(tn=self.tag_table))
+            names = [nm[0] for nm in names.description]
             for entry in data:
                 # Find the value's twin in the tags table
                 print(entry)
@@ -38,10 +42,11 @@ class Application(tk.Frame):
                             "WHERE {idx}='{myid}';"\
                             .format(tn=self.tag_table, idx=self.t_ID,
                                     myid=entry_idx)
+                print(fetch_cmd)
                 self.cursor.execute(fetch_cmd)
                 rows = self.cursor.fetchall()
                 print(rows)
-                print(rows[0].keys())
+                print(rows[0])
                 
                 vf = file_item.video_file(entry[1], self.res,
                                           self.restore_file_display,
