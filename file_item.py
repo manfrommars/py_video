@@ -22,7 +22,7 @@ class video_file(object):
         self.version=0.1
         self.redraw = redraw
         self.update_tag = tag_update
-        print('Got tags: %s' % tags)
+#        print('Got tags: %s' % tags)
         # Clean up the filepath
         self.filepath = os.path.expanduser(filepath)
         # Verify the file exists
@@ -131,11 +131,16 @@ class video_file(object):
         self.tags.hide()
         self.canvas_items.clear()
     def selected(self, event):
-        print('Selected: %s' % self.get_filename())
+#        print('Selected : %s' % self.get_filename())
         # Use "find_overlapping" to get the bounding rectangle, which will be
         # the lowest numbered item
-        rect = event.widget.find_closest(event.x, event.y)[0]
+        # Convert coordinates to canvas locations
+        canvas = event.widget
+        x = canvas.canvasx(event.x)
+        y = canvas.canvasy(event.y)
+        rect = event.widget.find_closest(x,y)[0]
         local = [f for f in self.canvas.find_withtag('title')
                  if f in self.canvas_items]
         if rect in local:
+#            print('opening %s' % self.filepath)
             subprocess.Popen(['open', self.filepath])
