@@ -1,3 +1,5 @@
+#!/Library/Frameworks/Python.framework/Versions/3.5/bin/python3
+
 import file_item
 import os
 import sys
@@ -34,33 +36,33 @@ class Application(tk.Frame):
             names = self.db.execute("SELECT * FROM {tn}"\
                                     .format(tn=self.tag_table))
             names = [nm[0] for nm in names.description]
+#            print(names)
             for entry in data:
                 # Find the value's twin in the tags table
-                print(entry)
+#                print(entry)
                 entry_idx = entry[0]
                 fetch_cmd = "SELECT * FROM {tn} "\
                             "WHERE {idx}='{myid}';"\
                             .format(tn=self.tag_table, idx=self.t_ID,
                                     myid=entry_idx)
-                print(fetch_cmd)
+#                print(fetch_cmd)
                 self.cursor.execute(fetch_cmd)
                 rows = self.cursor.fetchall()
-                print(rows)
-                print(rows[0])
+                tags = dict(zip(names, rows[0]))
+#                print(tags)
+                del tags['ID']
                 
                 vf = file_item.video_file(entry[1], self.res,
                                           self.restore_file_display,
                                           self.update_tag,
                                           fdatetime=entry[2],
                                           fhash=entry[3],
+                                          tags=tags,
                                           table_index=entry[0])
                 self.vid_files.append(vf)
                 self.display_add_file(vf)
-        except:
+        except sqlite3.OperationalError:
             # If the table does not exist, create one
-            print('oops')
-            print(sys.exc_info())
-
             try:
                 self.cursor.execute("CREATE TABLE {tn} "\
                                     "({tid} INTEGER PRIMARY KEY AUTOINCREMENT,"\
@@ -76,7 +78,7 @@ class Application(tk.Frame):
                 self.cursor.execute("CREATE TABLE {tn} "\
                                     "({tid} INTEGER PRIMARY KEY)"\
                                     .format(tn=self.tag_table, tid=self.t_ID))
-            except:
+            except sqlite3.OperationalError:
                 print("Something went wrong")
                 print(sys.exc_info())
                 pass
@@ -172,14 +174,6 @@ class Application(tk.Frame):
         # Update the database on the filesystem
         self.update_stored_info(vid_file)
         return vid_file
-    # Select a video item
-    def select_video(self, event):
-        print('Selected: ')
-        # Use "find_overlapping" to get the bounding rectangle, which will be
-        # the lowest numbered item
-        rect = min(event.widget.find_overlapping(event.x, event.y, event.x+1,
-                                                 event.y+1))
-        print(rect)
     # Add data from the video file to our SQL database
     def update_stored_info(self, vid_file_info):
         # Insert a new record into the SQL database
@@ -193,7 +187,7 @@ class Application(tk.Frame):
                              cr=self.t_cr_time, fh=self.t_file_hash,
                              mf=filename, tm=creation_time,
                              mh=file_hash)
-        print(insert_cmd)
+#        print(insert_cmd)
         self.cursor.execute(insert_cmd)
         self.db.commit()
         # Feed our table index back to the file
@@ -213,21 +207,21 @@ class Application(tk.Frame):
             # Insert a new line in the tags table for this table index
             insert_cmd = "INSERT INTO {tn} ({tid}) VALUES ({myid})"\
                          .format(tn=self.tag_table, tid=self.t_ID, myid=idx)
-            print(insert_cmd)
+#            print(insert_cmd)
             self.cursor.execute(insert_cmd)
             self.db.commit()
     def update_tag(self, idx, tags):
         # tags should be a dictionary of format {tag: value}
-        print(tags)
+#        print(tags)
         table_query = "PRAGMA table_info({tn})".format(tn=self.tag_table)
-        print(table_query)
+#        print(table_query)
         self.cursor.execute(table_query)
         columns = self.cursor.fetchall()
         columns = [row[1] for row in columns]
-        print(columns)
+#        print(columns)
         for tag in tags:
             db_val = ",".join(tags[tag])
-            print(db_val)
+#            print(db_val)
             if tag not in columns:
                 # create the column, allow for empty
                 add_column = "ALTER TABLE {tn} ADD COLUMN '{cn}' TEXT"\
@@ -237,7 +231,7 @@ class Application(tk.Frame):
             update_cmd = "UPDATE {tn} SET {cn}=('{val}') WHERE {idx}={myid}"\
                          .format(tn=self.tag_table, cn=tag, val=db_val,
                                  idx=self.t_ID, myid=idx)
-            print(update_cmd)
+#            print(update_cmd)
             self.cursor.execute(update_cmd)
         self.db.commit()
     def display_add_file(self, vid_file_info):

@@ -1,4 +1,5 @@
 import tkinter as tk
+import tkinter.font
 import add_tag
 
 class tag_field(object):
@@ -22,6 +23,8 @@ class tag_field(object):
         # Iterate over the list of tags
         for key in tags:
             # Each key should have at least one value in a list
+            if tags[key] == None:
+                continue
             if len(tags[key]) < 1:
                 print('Error, key \'%s\' invalid' % key)
                 continue
@@ -44,12 +47,15 @@ class tag_field(object):
             self.btn.hide()
             add_btn = True
         tag = '%s: ' % key
-        for val in values:
-            if val == values[-1]:
-                tag += ' %s' % val
-            else:
-                tag += ' %s,' % val
-        length = tk.font.Font(family='Helvetica',
+        if isinstance(values, str):
+            tag += values
+        else:
+            for val in values:
+                if val == values[-1]:
+                    tag += ' %s' % val
+                else:
+                    tag += ' %s,' % val
+        length = tkinter.font.Font(family='Helvetica',
                               size=self.font_size).measure(tag)
         # Determine if this tag will fit
         # if x == 4, at start nothing we can do

@@ -39,7 +39,7 @@ class add_tag():
     def tag_btn(self, event=None):
         key = self.tag_key.get()
         val = self.tag_value.get()
-        print('Key \'%s\' Value \'%s\'' % (key, val))
+#        print('Key \'%s\' Value \'%s\'' % (key, val))
         # When the user adds a key:value pair, check for NULL strings and the
         # default values
         BAD_KEYS = ['Key', '']
@@ -47,9 +47,9 @@ class add_tag():
         if key in BAD_KEYS or val in BAD_VALUES:
             return
         # Parse values for valid strings
-        print(val)
+#        print(val)
         vallist = val.split(',')
-        print(vallist)
+#        print(vallist)
         text = '%s:' % key
         for val in vallist:
             if val == vallist[-1]:
